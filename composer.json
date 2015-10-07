@@ -1,0 +1,13 @@
+{
+    "name": "djaney/doctrine-facade",
+    "description": "Extendable class for an entity facade service",
+    "require": {
+        "doctrine/doctrine-bundle": "^1.5"
+    },
+    "authors": [
+        {
+            "name": "Djane Rey Mabelin",
+            "email": "d.mabelin@arcanys.com"
+        }
+    ]
+}
