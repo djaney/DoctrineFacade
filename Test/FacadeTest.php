@@ -101,4 +101,13 @@ class FacadeTest extends \PHPUnit_Framework_TestCase
         })->getSubject();
         $this->assertInstanceOf('AppBundle\Entity\Employee', $employee);
     }
+
+    public function testMutate(){
+        $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
+        $ef->setSubjectById(1)
+            ->mutate(function($employee){
+                $this->assertEquals('Geraldine', $employee->getName());
+            });
+
+    }
 }
