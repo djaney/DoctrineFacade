@@ -2,7 +2,13 @@
     "name": "djaney/doctrine-facade",
     "description": "Extendable class for an entity facade service",
     "require": {
-        "doctrine/doctrine-bundle": "^1.5"
+        "doctrine/doctrine-bundle": "~1.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~5.0"
+    },
+    "autoload": {
+        "psr-4": {"Djaney\\DoctrineFacade\\": "src/"}
     },
     "authors": [
         {

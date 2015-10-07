@@ -18,8 +18,10 @@ class EntityFacade {
     }
 
     public function getById($id){
-        return $this->doctrine->getRepository($this->className)
-        ->find($id);
+        return $this
+            ->doctrine
+            ->getRepository($this->className)
+            ->find($id);
     }
     public function setSubject($subject){
         $this->subject = $subject;
