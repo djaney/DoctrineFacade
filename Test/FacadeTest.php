@@ -108,6 +108,16 @@ class FacadeTest extends \PHPUnit_Framework_TestCase
             ->mutate(function($employee){
                 $this->assertEquals('Geraldine', $employee->getName());
             });
+    }
 
+    /**
+     * @expectedException Djaney\DoctrineFacade\InvalidFacadeSubjectException
+     */
+    public function testMutateExceptions(){
+        $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
+        $ef
+            ->mutate(function($employee){
+                $this->assertEquals('Geraldine', $employee->getName());
+            });
     }
 }
