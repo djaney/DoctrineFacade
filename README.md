@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/djaney/DoctrineFacade.svg?branch=master)](https://travis-ci.org/djaney/DoctrineFacade)
+
 # DoctrineFacade
 Extendable class for an entity facade service
 
