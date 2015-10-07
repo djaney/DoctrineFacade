@@ -11,7 +11,7 @@ class FacadeTest extends \PHPUnit_Framework_TestCase
         // First, mock the object to be used in the test
         $employee = $this
             ->getMockBuilder('AppBundle\Entity\Employee')
-            ->setMethods(['getName','getId'])
+            ->setMethods(['getName','getId','setName'])
             ->getMock()
         ;
 
@@ -113,11 +113,44 @@ class FacadeTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException Djaney\DoctrineFacade\InvalidFacadeSubjectException
      */
-    public function testMutateExceptions(){
+    public function testMutateInvalidSubjectException(){
         $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
         $ef
             ->mutate(function($employee){
                 $this->assertEquals('Geraldine', $employee->getName());
             });
+    }
+
+    public function testPatch(){
+        $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
+        $this->employee->expects($this->once())
+            ->method('setName');
+        $ef->setSubjectById(1)
+            ->patch(['name'=>'Djane Rey']);
+    }
+    /**
+     * @expectedException Djaney\DoctrineFacade\InvalidFacadeSubjectException
+     */
+    public function testPatchInvalidSubjectException(){
+        $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
+        $ef->patch(['name'=>'Djane Rey']);
+    }
+
+    public function testDelete(){
+        $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
+
+        // expect manager flush to be called
+        $this->doctrine->getManager()->expects($this->once())
+            ->method('remove');
+
+            $ef->setSubjectById(1)->delete();
+    }
+    /**
+     * @expectedException Djaney\DoctrineFacade\InvalidFacadeSubjectException
+     */
+    public function testDeleteInvalidSubjectException(){
+        $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
+
+        $ef->delete();
     }
 }
