@@ -67,19 +67,19 @@ class FacadeTest extends \PHPUnit_Framework_TestCase
 
     public function testSetSubject(){
         $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
-        $e = $ef->setSubject($this->employee);
+        $e = $ef->start($this->employee);
         $this->assertEquals($this->employee, $e->getSubject());
     }
 
     public function testSetSubjectById(){
         $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
-        $e = $ef->setSubjectById(1);
+        $e = $ef->start(1);
         $this->assertEquals(1, $e->getSubject()->getId());
     }
 
     public function testclean(){
         $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
-        $ef->setSubject($this->employee);
+        $ef->start($this->employee);
         $ef->clean();
         $this->assertEquals(null, $ef->getSubject());
     }
@@ -104,7 +104,7 @@ class FacadeTest extends \PHPUnit_Framework_TestCase
 
     public function testMutate(){
         $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
-        $ef->setSubjectById(1)
+        $ef->start(1)
             ->mutate(function($employee){
                 $this->assertEquals('Geraldine', $employee->getName());
             });
@@ -125,7 +125,7 @@ class FacadeTest extends \PHPUnit_Framework_TestCase
         $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
         $this->employee->expects($this->once())
             ->method('setName');
-        $ef->setSubjectById(1)
+        $ef->start(1)
             ->patch(['name'=>'Djane Rey']);
     }
     /**
@@ -143,7 +143,7 @@ class FacadeTest extends \PHPUnit_Framework_TestCase
         $this->doctrine->getManager()->expects($this->once())
             ->method('remove');
 
-            $ef->setSubjectById(1)->delete();
+            $ef->start(1)->delete();
     }
     /**
      * @expectedException Djaney\DoctrineFacade\InvalidFacadeSubjectException
@@ -157,7 +157,7 @@ class FacadeTest extends \PHPUnit_Framework_TestCase
     // public function testCollection(){
     //     $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
     //     $col = $ef->getCollection();
-    //     $this->assertInstanceOf('Djaney\DoctrineFacade\Collection', $col);
+    //     // $this->assertInstanceOf('Djaney\DoctrineFacade\Collection', $col);
     //     $this->assertCount(10, $col);
     // }
 }

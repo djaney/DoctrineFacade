@@ -23,11 +23,18 @@ class EntityFacade {
             ->getRepository($this->className)
             ->find($id);
     }
-    public function setSubject($subject){
+    protected function setSubject($subject){
         $this->subject = $subject;
         return $this;
     }
-    public function setSubjectById($id){
+    public function start($subj){
+        if(is_object($subj)){
+            return $this->setSubject($subj);
+        }else{
+            return $this->setSubjectById($subj);
+        }
+    }
+    protected function setSubjectById($id){
         return $this->setSubject($this->getById($id));
     }
     public function getSubject(){
