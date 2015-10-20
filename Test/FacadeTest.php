@@ -23,6 +23,7 @@ class FacadeTest extends \PHPUnit_Framework_TestCase
             ->method('getId')
             ->willReturn(1);
 
+
         // Now, mock the repository so it returns the mock of the employee
         $employeeRepository = $this
             ->getMockBuilder('Doctrine\Common\Persistence\ObjectRepository')
@@ -31,6 +32,13 @@ class FacadeTest extends \PHPUnit_Framework_TestCase
         $employeeRepository->expects($this->any())
             ->method('find')
             ->willReturn($employee);
+        $employeeRepository->expects($this->any())
+            ->method('findBy')
+            ->willReturn([
+                $employee,
+                $employee,
+                $employee
+            ]);
 
         // mock the EntityManager to return the mock of the repository
         $entityManager = $this
@@ -154,10 +162,10 @@ class FacadeTest extends \PHPUnit_Framework_TestCase
         $ef->delete();
     }
 
-    // public function testCollection(){
-    //     $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
-    //     $col = $ef->getCollection();
-    //     // $this->assertInstanceOf('Djaney\DoctrineFacade\Collection', $col);
-    //     $this->assertCount(10, $col);
-    // }
+    public function testCollection(){
+        $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
+        $col = $ef->getCollection();
+        $this->assertCount(3, $col);
+        $this->assertInstanceOf('AppBundle\Entity\Employee', $col[0]);
+    }
 }

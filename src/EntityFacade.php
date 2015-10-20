@@ -13,8 +13,11 @@ class EntityFacade {
         $this->em = $this->doctrine->getManager();
     }
 
-    public function getCollection($limit = 10, $orderBy = null, $direction = 'ASC'){
-        // TODO
+    public function getCollection($criteria = array(), $limit = 10, $offset = 0, $orderBy = array(), $direction = 'ASC'){
+        $col = $this->doctrine
+            ->getRepository($this->className)
+            ->findBy($criteria, $orderBy, $limit, $offset);
+        return $col;
     }
 
     public function getById($id){
