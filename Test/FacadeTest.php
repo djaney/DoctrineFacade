@@ -84,14 +84,14 @@ class FacadeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(null, $ef->getSubject());
     }
 
-    public function testFlush(){
+    public function testFinish(){
         $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
 
         // expect manager flush to be called
         $this->doctrine->getManager()->expects($this->once())
             ->method('flush');
 
-        $ef->flush();
+        $ef->finish();
     }
 
     public function testCreate(){
@@ -153,4 +153,11 @@ class FacadeTest extends \PHPUnit_Framework_TestCase
 
         $ef->delete();
     }
+
+    // public function testCollection(){
+    //     $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
+    //     $col = $ef->getCollection();
+    //     $this->assertInstanceOf('Djaney\DoctrineFacade\Collection', $col);
+    //     $this->assertCount(10, $col);
+    // }
 }

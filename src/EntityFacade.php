@@ -37,7 +37,7 @@ class EntityFacade {
         $this->subject = null;
         return $this;
     }
-    public function flush(){
+    public function finish(){
         $this->em->flush();
         return $this->clean();
     }
