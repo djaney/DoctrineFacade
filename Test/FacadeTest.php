@@ -67,53 +67,21 @@ class FacadeTest extends \PHPUnit_Framework_TestCase
         $this->doctrine = $doctrine;
     }
 
-    public function testGetById(){
+    public function testGet(){
         $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
-        $e = $ef->getById(1);
+        $e = $ef->get(1);
         $this->assertEquals('Geraldine', $e->getName());
     }
 
-    public function testSetSubject(){
+    public function testPost(){
         $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
-        $e = $ef->start($this->employee);
-        $this->assertEquals($this->employee, $e->getSubject());
-    }
-
-    public function testSetSubjectById(){
-        $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
-        $e = $ef->start(1);
-        $this->assertEquals(1, $e->getSubject()->getId());
-    }
-
-    public function testclean(){
-        $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
-        $ef->start($this->employee);
-        $ef->clean();
-        $this->assertEquals(null, $ef->getSubject());
-    }
-
-    public function testFinish(){
-        $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
-
-        // expect manager flush to be called
-        $this->doctrine->getManager()->expects($this->once())
-            ->method('flush');
-
-        $ef->finish();
-    }
-
-    public function testCreate(){
-        $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
-        $employee = $ef->create(function($o){
-            $o->setName('Geraldine');
-        })->getSubject();
+        $employee = $ef->post(['name'=>'Geraldine']);
         $this->assertInstanceOf('AppBundle\Entity\Employee', $employee);
     }
 
     public function testMutate(){
         $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
-        $ef->start(1)
-            ->mutate(function($employee){
+        $ef->mutate(1,function($employee){
                 $this->assertEquals('Geraldine', $employee->getName());
             });
     }
@@ -123,8 +91,7 @@ class FacadeTest extends \PHPUnit_Framework_TestCase
      */
     public function testMutateInvalidSubjectException(){
         $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
-        $ef
-            ->mutate(function($employee){
+        $ef->mutate(-1,function($employee){
                 $this->assertEquals('Geraldine', $employee->getName());
             });
     }
@@ -133,15 +100,14 @@ class FacadeTest extends \PHPUnit_Framework_TestCase
         $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
         $this->employee->expects($this->once())
             ->method('setName');
-        $ef->start(1)
-            ->patch(['name'=>'Djane Rey']);
+        $ef->patch(1,['name'=>'Djane Rey']);
     }
     /**
      * @expectedException Djaney\DoctrineFacade\InvalidFacadeSubjectException
      */
     public function testPatchInvalidSubjectException(){
         $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
-        $ef->patch(['name'=>'Djane Rey']);
+        $ef->patch(-1,['name'=>'Djane Rey']);
     }
 
     public function testDelete(){
@@ -151,7 +117,7 @@ class FacadeTest extends \PHPUnit_Framework_TestCase
         $this->doctrine->getManager()->expects($this->once())
             ->method('remove');
 
-            $ef->start(1)->delete();
+            $ef->delete(1);
     }
     /**
      * @expectedException Djaney\DoctrineFacade\InvalidFacadeSubjectException
@@ -159,12 +125,12 @@ class FacadeTest extends \PHPUnit_Framework_TestCase
     public function testDeleteInvalidSubjectException(){
         $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
 
-        $ef->delete();
+        $ef->delete(-1);
     }
 
     public function testCollection(){
         $ef = new EntityFacade($this->doctrine,'AppBundle\Entity\Employee');
-        $col = $ef->getCollection();
+        $col = $ef->query();
         $this->assertCount(3, $col);
         $this->assertInstanceOf('AppBundle\Entity\Employee', $col[0]);
     }
