@@ -31,7 +31,13 @@ class FacadeTest extends \PHPUnit_Framework_TestCase
             ->getMock();
         $employeeRepository->expects($this->any())
             ->method('find')
-            ->willReturn($employee);
+            ->will($this->returnValueMap(array(
+              array(-1,null),
+              array(1,$employee)
+            )));
+            // ->willReturn($employee);
+
+
         $employeeRepository->expects($this->any())
             ->method('findBy')
             ->willReturn([

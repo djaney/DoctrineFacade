@@ -3,9 +3,26 @@ namespace Djaney\DoctrineFacade;
 class EntityFacade {
 
     protected $doctrine;
-    protected $subject = null;
     protected $em = null;
     protected $className = null;
+
+    private function clean(){
+        $this->subject = null;
+        return $this;
+    }
+
+    private function finish(){
+        $this->em->flush();
+        return $this->clean();
+    }
+
+    private function setterMethod($field){
+        return 'set' . ucfirst($field);
+    }
+
+    private function getterMethod($field){
+        return 'get' . ucfirst($field);
+    }
 
     public function __construct($doctrine,$className = null){
         $this->doctrine = $doctrine;
@@ -13,77 +30,59 @@ class EntityFacade {
         $this->em = $this->doctrine->getManager();
     }
 
-    public function getCollection($criteria = array(), $limit = 10, $offset = 0, $orderBy = array(), $direction = 'ASC'){
+    public function query($criteria = array(), $limit = 10, $offset = 0, $orderBy = array(), $direction = 'ASC'){
         $col = $this->doctrine
             ->getRepository($this->className)
             ->findBy($criteria, $orderBy, $limit, $offset);
         return $col;
     }
 
-    public function getById($id){
+    public function get($id){
         return $this
             ->doctrine
             ->getRepository($this->className)
             ->find($id);
     }
-    protected function setSubject($subject){
-        $this->subject = $subject;
-        return $this;
-    }
-    public function start($subj){
-        if(is_object($subj)){
-            return $this->setSubject($subj);
-        }else{
-            return $this->setSubjectById($subj);
-        }
-    }
-    protected function setSubjectById($id){
-        return $this->setSubject($this->getById($id));
-    }
-    public function getSubject(){
-        return $this->subject;
-    }
-    public function clean(){
-        $this->subject = null;
-        return $this;
-    }
-    public function finish(){
-        $this->em->flush();
-        return $this->clean();
-    }
 
-    public function create(){
-
-        $r = new \ReflectionClass($this->className);
-        $subject = $r->newInstanceArgs();
-        $this->em->persist($subject);
-        $this->em->flush();
-        $this->setSubject($subject);
-        return $this;
-    }
-
-    public function mutate(\Closure $callback){
-        if($this->subject===null) throw new InvalidFacadeSubjectException();
-        $callback($this->subject);
-        return $this;
-    }
-    public function patch($array){
-        if($this->subject===null) throw new InvalidFacadeSubjectException();
-        $r = new \ReflectionClass($this->subject);
-        foreach($array as $k=>$v){
+    private function patcher($subj,$attrs){
+        if($subj===null) throw new InvalidFacadeSubjectException();
+        $r = new \ReflectionClass($subj);
+        foreach($attrs as $k=>$v){
             if( $k=='id' ) continue;
-            $method = 'set' . ucfirst($k) ;
+            $method = $this->setterMethod($k);
             if( $r->hasMethod( $method ) ){
-                $this->subject->$method($v);
+                $subj->$method($v);
             }
         }
-        return $this;
     }
 
-    public function delete(){
-        if($this->subject===null) throw new InvalidFacadeSubjectException();
-        $this->em->remove($this->subject);
+    public function post($attrs){
+
+        $r = new \ReflectionClass($this->className);
+        $subj = $r->newInstanceArgs();
+        $this->em->persist($subj);
+        $this->patcher($subj,$attrs);
+        $this->em->flush();
+        return $subj;
+    }
+
+    public function mutate($id, \Closure $callback){
+        $subj = $this->get($id);
+        if($subj===null) throw new InvalidFacadeSubjectException();
+        $callback($subj);
         return $this;
+    }
+    
+    public function patch($id, $attrs){
+        $subj = $this->get($id);
+        $this->patcher($subj,$attrs);
+        return $subj;
+    }
+
+    public function delete($id){
+        $subj = $this->get($id);
+        if($subj===null) throw new InvalidFacadeSubjectException();
+        $this->em->remove($subj);
     }
 
 }
