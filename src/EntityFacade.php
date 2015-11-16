@@ -30,6 +30,10 @@ class EntityFacade {
         $this->em = $this->doctrine->getManager();
     }
 
+    public function getClass(){
+        return $this->className;
+    }
+
     public function query($criteria = array(), $limit = 10, $offset = 0, $orderBy = array(), $direction = 'ASC'){
         $col = $this->doctrine
             ->getRepository($this->className)
