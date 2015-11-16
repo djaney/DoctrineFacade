@@ -70,12 +70,14 @@ class EntityFacade {
         $subj = $this->get($id);
         if($subj===null) throw new InvalidFacadeSubjectException();
         $callback($subj);
+        $this->em->flush();
         return $this;
     }
-    
+
     public function patch($id, $attrs){
         $subj = $this->get($id);
         $this->patcher($subj,$attrs);
+        $this->em->flush();
         return $subj;
     }
 
@@ -83,6 +85,7 @@ class EntityFacade {
         $subj = $this->get($id);
         if($subj===null) throw new InvalidFacadeSubjectException();
         $this->em->remove($subj);
+        $this->em->flush();
     }
 
 }
